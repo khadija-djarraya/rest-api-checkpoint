@@ -1,9 +1,9 @@
 const mongoose=require('mongoose');
-const { Schema } = mongoose;
+//const { Schema } = mongoose;
 
 //defining schema
-const userSchema = new Schema({
-  name:  String, 
+const userSchema = new mongoose.Schema({
+  name:  String,
   age: Number
 });
 

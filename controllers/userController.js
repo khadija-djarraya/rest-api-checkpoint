@@ -1,47 +1,67 @@
 const { response } = require('express');
-var user = require('../models/User');
+var User = require('../models/User');
 
-/*exports.index = function(req, res) {
-    res.send('NOT IMPLEMENTED: Site Home Page');
-};*/
-//CONTROLLERS:
-
-// Display list of all users.
-exports.userList = async function(req, res) {
-    try{
-        const list= await User.find()
-        response.status("found all users successfully.").json(list);
-    }
-    catch{
-        response.status(422).json(`Error: ${err}`)
-    }};
-
-// Handle user create on POST.
+//       POST :  ADD A NEW USER TO THE DATABASE - DONE
 exports.userCreate = async function(req, res) {
-    const{name,age}=request.body
-    try{
-        const newUser = await User.create({name:name,age:age})
-        response.status("created successfully.").json(newUser);
+    if(!req.body){
+      res.send("content can not be empty");
     }
-    catch{
-        response.status(422).json(`Error: ${err}`)
-    }
+    const user=new User({
+      name: req.body.name,
+      age: req.body.age
+    });
+    user.save(user)
+      .then(data=>{
+        res.send(data);})
+      .catch(err=>{
+        res.status(500).send({
+          message: err.message("error, create operation failed")
+        });
+      });
 };
 
-// Handle book delete on POST.
-exports.userDelete = async function(req, res) {
-    const{_id}=request.body
-    try{
-        await User.deleteOne({_id:_id})
-        response.status("deleted successfully.")
-    }
-    catch{
-        response.status(422).json(`Error: ${err}`)
-    }};
+//       GET :  RETURN ALL USERS - DONE.
+exports.userList =(req, res)=>{
+    User.find()
+      .then(user=>{
+      res.send(user)})
+      .catch((err)=>{
+        res.status(500).send({message: err.message ||"Error occured when finding the users."})
+      })
+};
 
-// Handle book update on POST.
+//       PUT : EDIT A USER BY ID - DONE
 exports.userUpdate = function(req, res) {
-    res.send('NOT IMPLEMENTED: user update POST');
-};
+    if(!req.body){
+      res.send("updated content can not be empty").status(400);
+    }
+    const id=req.params.id;
+    User.findByIdAndUpdate(id,req.body,{useFindAndModify:false})
+      .then(data =>{
+        if(!data){
+          res.status(404).send({message: ` can not update with id: ${id}, not found.`});
+        }
+        else{ res.send({message: `user updated successfully!`})}
+      })
+      .catch(err=>{
+        res.status(500).send({
+          message:`Could not delete user with id: ${id}`
+        })
+      });
+  };
 
-
+//       DELETE : REMOVE A USER BY ID - DONEEE
+exports.userDelete = async function(req, res) {
+    const id=req.params.id;
+    User.findByIdAndDelete(id)
+      .then(data =>{
+        if(!data){
+          res.status(404).send({message:`can not delete element with id: ${id}, not found.`})
+        }else{ res.send({message: `User Deleted Successfully!`})}
+      })
+      .catch(err=>{
+        res.status(500).send({
+          message:`Could not delete user with id: ${id}`
+        })
+      })
+}

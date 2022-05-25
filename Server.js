@@ -1,4 +1,4 @@
-require('dotenv').config({path:'./config/.env'})
+require('dotenv').config({path:'./.env'})
 const express = require('express');
 const bodyparser = require("body-parser");
 const PORT = process.env.PORT || 3000;
@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
 
 app.use(bodyparser.urlencoded({ extended : true}))
 
-app.use('/user',usersRoute)
+app.use('/api',usersRoute)
 
 
 // Start the server on port 3000
